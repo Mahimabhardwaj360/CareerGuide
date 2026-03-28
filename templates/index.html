@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Career Roadmap Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #fdf8f3;
+      --warm-white: #fffcf8;
+      --sand:       #f5ede0;
+      --amber:      #e8a84c;
+      --amber-deep: #c8852a;
+      --charcoal:   #2c2825;
+      --muted:      #7a6f65;
+      --border:     #e8ddd3;
+      --card-bg:    #ffffff;
+      --shadow-sm:  0 2px 8px rgba(100,70,30,.07);
+      --shadow-md:  0 8px 32px rgba(100,70,30,.12);
+      --shadow-lg:  0 20px 60px rgba(100,70,30,.15);
+      --radius:     18px;
+      --radius-sm:  10px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Decorative blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: .45;
+      z-index: 0;
+    }
+    body::before {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, #f5d9a8 0%, #f0c07a 60%, transparent 100%);
+      top: -120px; left: -140px;
+    }
+    body::after {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #fde8cc 0%, #f8c896 60%, transparent 100%);
+      bottom: -100px; right: -100px;
+    }
+
+    /* Floating dots pattern */
+    .bg-dots {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(circle, #c8a06040 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
+    }
+
+    /* ── Card ── */
+    .card {
+      position: relative; z-index: 1;
+      background: var(--card-bg);
+      border-radius: 28px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(232,168,76,.12);
+      width: 100%; max-width: 680px;
+      overflow: hidden;
+      animation: cardIn .7s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(36px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Header band ── */
+    .card-header {
+      background: linear-gradient(135deg, #2c2825 0%, #3f3530 55%, #5a4535 100%);
+      padding: 44px 48px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .card-header::after {
+      content: '';
+      position: absolute;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(232,168,76,.25) 0%, transparent 70%);
+      top: -60px; right: -60px;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(232,168,76,.18);
+      border: 1px solid rgba(232,168,76,.35);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #f0c87a;
+      margin-bottom: 18px;
+      position: relative; z-index: 1;
+    }
+    .badge span { font-size: .9rem; }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+      position: relative; z-index: 1;
+    }
+    .card-title .emoji { font-family: 'Poppins', sans-serif; }
+
+    .card-sub {
+      margin-top: 10px;
+      font-size: .85rem;
+      color: rgba(255,255,255,.5);
+      font-weight: 300;
+      letter-spacing: .01em;
+      position: relative; z-index: 1;
+    }
+
+    /* ── Progress dots ── */
+    .progress-dots {
+      display: flex; gap: 6px;
+      margin-top: 28px;
+      position: relative; z-index: 1;
+    }
+    .dot { width: 28px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.15); }
+    .dot.active { background: var(--amber); width: 44px; }
+
+    /* ── Form body ── */
+    .card-body { padding: 40px 48px 48px; }
+
+    .form-grid { display: grid; gap: 22px; }
+    .form-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+    @media (max-width: 560px) {
+      .card-header, .card-body { padding-left: 24px; padding-right: 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .card-title { font-size: 1.6rem; }
+    }
+
+    /* ── Field wrapper ── */
+    .field { display: flex; flex-direction: column; gap: 8px; }
+
+    .field-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .field-label .icon {
+      width: 26px; height: 26px;
+      background: var(--sand);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+
+    /* ── Inputs ── */
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--warm-white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: .9rem;
+      font-weight: 400;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color .22s, box-shadow .22s, background .22s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: #c0b5aa; font-weight: 300; }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--amber);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(232,168,76,.12), var(--shadow-sm);
+    }
+
+    .select-wrap { position: relative; }
+    .select-wrap select { cursor: pointer; padding-right: 42px; }
+    .select-arrow {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--muted); font-size: .75rem;
+    }
+
+    .field textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+    /* ── Tag chip input hint ── */
+    .field-hint {
+      font-size: .72rem;
+      color: #b0a59c;
+      font-weight: 300;
+      margin-top: -4px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex; align-items: center; gap: 14px;
+      color: var(--border);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #c5b8ae;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      padding: 17px 24px;
+      background: linear-gradient(135deg, #e8a84c 0%, #d4883a 100%);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 4px 20px rgba(200,133,42,.38), 0 1px 3px rgba(200,133,42,.25);
+      transition: transform .2s, box-shadow .2s, filter .2s;
+      position: relative;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .btn-submit::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 60%);
+      transition: opacity .2s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(200,133,42,.48), 0 2px 6px rgba(200,133,42,.3);
+      filter: brightness(1.05);
+    }
+    .btn-submit:active { transform: translateY(0); }
+
+    .btn-arrow {
+      background: rgba(255,255,255,.22);
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+      transition: transform .2s;
+    }
+    .btn-submit:hover .btn-arrow { transform: translateX(3px); }
+
+    /* ── Footer note ── */
+    .footer-note {
+      text-align: center;
+      font-size: .73rem;
+      color: #c0b5aa;
+      font-weight: 300;
+      margin-top: 22px;
+    }
+    .footer-note a { color: var(--amber-deep); text-decoration: none; font-weight: 500; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    /* ── Stagger animation for fields ── */
+    .field { animation: fieldIn .5s ease both; }
+    .field:nth-child(1)  { animation-delay: .05s; }
+    .field:nth-child(2)  { animation-delay: .10s; }
+    .field:nth-child(3)  { animation-delay: .15s; }
+    .field:nth-child(4)  { animation-delay: .20s; }
+    .field:nth-child(5)  { animation-delay: .25s; }
+    .field:nth-child(6)  { animation-delay: .30s; }
+    .field:nth-child(7)  { animation-delay: .35s; }
+    .divider             { animation: fieldIn .5s .38s ease both; }
+    .btn-submit          { animation: fieldIn .5s .42s ease both; }
+    .footer-note         { animation: fieldIn .5s .48s ease both; }
+
+    @keyframes fieldIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-dots"></div>
+
+  <div class="card">
+
+    <!-- ── Header ── -->
+    <div class="card-header">
+      <div class="badge"><span>✦</span> AI-Powered</div>
+      <h1 class="card-title">Design Your Career Path <span class="emoji">🚀</span></h1>
+      <p class="card-sub">Tell us about yourself and we'll craft a personalised roadmap just for you.</p>
+      <div class="progress-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- ── Body ── -->
+    <div class="card-body">
+      <form action="/generate" method="POST">
+        <div class="form-grid">
+
+          <!-- Row 1: Education + Year -->
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="education">
+                <span class="icon">🎓</span> Education Level
+              </label>
+              <div class="select-wrap">
+                <select id="education" name="education_level" required>
+                  <option value="" disabled selected>Select level…</option>
+                  <option>High School (9th–10th)</option>
+                  <option>Senior Secondary (11th–12th)</option>
+                  <option>Undergraduate (UG)</option>
+                  <option>Postgraduate (PG)</option>
+                  <option>Doctorate / PhD</option>
+                  <option>Diploma / Polytechnic</option>
+                  <option>Working Professional</option>
+                </select>
+                <span class="select-arrow">▾</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="year">
+                <span class="icon">📅</span> Current Year / Class
+              </label>
+              <input type="text" id="year" name="current_year_or_class" placeholder="e.g. 2nd Year B.Tech" required />
+            </div>
+          </div>
+
+          <!-- Career Goal -->
+          <div class="field">
+            <label class="field-label" for="goal">
+              <span class="icon">🎯</span> Career Goal
+            </label>
+            <input type="text" id="goal" name="career_goal" placeholder="e.g. Become a Software Engineer at a top tech company" required />
+          </div>
+
+          <!-- Skills -->
+          <div class="field">
+            <label class="field-label" for="skills">
+              <span class="icon">⚡</span> Current Skills
+            </label>
+            <textarea id="skills" name="skills" placeholder="e.g. Python, JavaScript, Data Analysis, Communication…" required></textarea>
+            <span class="field-hint">List any technical or soft skills you already have.</span>
+          </div>
+
+          <!-- Row 2: Industries + Certifications -->
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="industries">
+                <span class="icon">🏢</span> Target Industries
+              </label>
+              <input type="text" id="industries" name="industries" placeholder="e.g. FinTech, EdTech, Healthcare" required />
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="exams">
+                <span class="icon">📝</span> Exams / Certifications
+              </label>
+              <input type="text" id="exams" name="exams_certifications" placeholder="e.g. GATE, AWS, GRE…" />
+            </div>
+          </div>
+
+          <!-- Career Path Progression -->
+          <div class="field">
+            <label class="field-label" for="progression">
+              <span class="icon">📈</span> Career Path Progression
+            </label>
+            <div class="select-wrap">
+              <select id="progression" name="career_path_progression">
+                <option value="" disabled selected>Choose your preferred path…</option>
+                <option>Individual Contributor → Senior → Staff</option>
+                <option>Generalist → Specialist → Expert</option>
+                <option>Corporate → Startup Founder</option>
+                <option>Employee → Freelancer / Consultant</option>
+                <option>Technical → Management / Leadership</option>
+                <option>Academia → Industry</option>
+                <option>Open to suggestions</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="divider">Ready to begin</div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn-submit">
+            Generate My Roadmap
+            <span class="btn-arrow">→</span>
+          </button>
+
+        </div><!-- /.form-grid -->
+      </form>
+
+      <p class="footer-note">
+        Your data stays private. By continuing you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.
+      </p>
+    </div><!-- /.card-body -->
+
+  </div><!-- /.card -->
+</body>
+</html>
