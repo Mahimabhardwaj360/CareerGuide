@@ -90,18 +90,23 @@ def generate():
     """
     # ── 1. Collect ────────────────────────────────────────
     user_data = _collect_form_data(request.form)
+    print("DEBUG: Form data received:", user_data)
 
     # ── 2. Validate ───────────────────────────────────────
     errors = _validate(user_data)
+    print("DEBUG: Validation errors:", errors)
     if errors:
         # Pass errors back to the form so the user can fix them
+        print("DEBUG: Returning to form with errors")
         return render_template("index.html", errors=errors, form_data=user_data), 422
 
     # ── 3. Generate ───────────────────────────────────────
     try:
         roadmap = generate_roadmap(user_data)
+        print("DEBUG: Roadmap generated successfully")
     except Exception as exc:                         # Catch any unexpected generator error
         app.logger.error("Roadmap generation failed: %s", exc)
+        print("DEBUG: Roadmap generation failed:", exc)
         return render_template(
             "index.html",
             errors=["Something went wrong while generating your roadmap. Please try again."],
@@ -109,6 +114,7 @@ def generate():
         ), 500
 
     # ── 4. Render ─────────────────────────────────────────
+    print("DEBUG: Rendering result page")
     return render_template("result.html", roadmap=roadmap, user_data=user_data)
 
 
