@@ -83,7 +83,9 @@ CareerGuide/
 │   └── result.html       # Results page
 └── README.md            # This file
 
+```
 ---
+
 
 ## ⚙️ Installation & Setup
 
